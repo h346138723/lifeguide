@@ -163,50 +163,119 @@ const nameOf = slug => { const it = INS.find(x => x.slug === slug); return it ? 
 (function(){
   const q = $("#q"), meta = $("#meta"), res = $("#results");
   let deb = null;
-  q.addEventListener("input", () => { clearTimeout(deb); deb = setTimeout(run, 120); });
+  const sentCache = {};
+  const esc = s => String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+  window.res = res;
+  window.gotoHit = null;
+  function textNodesOf(el){
+    const out = []; const w = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+    let n, pos = 0;
+    while((n = w.nextNode())){ const l = n.textContent.length; out.push({n, s: pos, e: pos + l}); pos += l; }
+    return out;
+  }
+  function clearMarks(){
+    document.querySelectorAll("mark.sr").forEach(m => { const t = document.createTextNode(m.textContent); m.replaceWith(t); });
+  }
+  window.gotoHit = function(secId, off, len){
+    try{
+      clearMarks();
+      const el = document.getElementById(secId);
+      if(!el) return;
+      el.querySelectorAll("details").forEach(d => d.open = true);
+      const nodes = textNodesOf(el);
+      if(!nodes.length) return;
+      const a = nodes.find(x => off < x.e) || nodes[nodes.length - 1];
+      const b = nodes.find(x => off + len <= x.e) || nodes[nodes.length - 1];
+      const range = document.createRange();
+      range.setStart(a.n, Math.max(0, off - a.s));
+      range.setEnd(b.n, Math.max(0, off + len - b.s));
+      const frag = range.extractContents();
+      const mark = document.createElement("mark");
+      mark.className = "sr";
+      mark.style.background = "#e5b13d"; mark.style.color = "#0e141b";
+      mark.style.borderRadius = "3px"; mark.style.padding = "0 2px";
+      mark.appendChild(frag);
+      range.insertNode(mark);
+      mark.scrollIntoView({block: "center", behavior: "smooth"});
+      try{ q.blur(); }catch(e2){}
+    }catch(e){}
+  };
+  function firstHit(text, toks){
+    let best = null;
+    toks.forEach(t => {
+      const i = text.indexOf(t);
+      if(i !== -1 && (best === null || i < best.off)) best = {off: i, len: t.length};
+    });
+    return best;
+  }
+  function win(text, off, len, pad){
+    const s = Math.max(0, off - pad), e = Math.min(text.length, off + len + pad);
+    return {off: s, len: e - s, pre: s > 0 ? "…" : "", post: e < text.length ? "…" : "", disp: text.slice(s, e).replace(/\s+/g, " ").slice(0, 110)};
+  }
   function run(){
     const kw = q.value.trim().toLowerCase();
+    const cards = () => document.querySelectorAll("#insights .card");
     if(!kw){
-      meta.textContent = `共 ${INS.length} 条洞见 · ${DATA.book.nChapter} 章原文。输入关键词即搜。`;
+      cards().forEach(c => c.style.display = "");
+      meta.textContent = `共 ${INS.length} 条洞见 · ${DATA.book.nChapter} 章原文。输入问题，点结果直接跳到命中那句并标黄。`;
       res.style.display = "none"; return;
     }
     const toks = kw.split(/[\s,，、;；]+/).filter(Boolean);
-    const hit = txt => { let c=0; toks.forEach(t => { if(txt.includes(t)) c++; }); return c; };
     const ih = [];
-    document.querySelectorAll("#insights .card").forEach(card => {
-      const c = hit(card.dataset.t);
-      card.style.display = c ? "" : "none";
-      if(c) ih.push([c, card]);
+    cards().forEach(card => {
+      const text = card.textContent.toLowerCase();
+      const h = firstHit(text, toks);
+      card.style.display = h ? "" : "none";
+      if(h){ const w = win(text, h.off, h.len, 45); ih.push({id: card.id, text: text, title: card.querySelector("h2").innerText.replace(/^\d+\.\s*/, ""), off: w.off, len: w.len, disp: w.pre + w.disp + w.post}); }
     });
     const sh = [];
     document.querySelectorAll("#bookbox .booksec").forEach(sec => {
-      const c = hit(sec.dataset.t);
-      if(c) sh.push([c, sec]);
+      const id = sec.id;
+      if(!sentCache[id]){
+        const t = sec.textContent;
+        const sents = []; const re = /[^。！？!?；;\n]+[。！？!?；;\n]*/g; let m;
+        while((m = re.exec(t))) sents.push({t: m[0], off: m.index});
+        sentCache[id] = {text: t, sents};
+      }
+      const {text, sents} = sentCache[id];
+      const secHits = [];
+      for(const sn of sents){
+        const h = firstHit(sn.t.toLowerCase(), toks);
+        if(h && secHits.length < 2){
+          const w = win(text, sn.off + h.off, h.len, 45);
+          secHits.push({off: w.off, len: w.len, disp: w.pre + w.disp + w.post});
+        }
+      }
+      if(secHits.length) sh.push({id: id, title: sec.querySelector("h3").innerText, hits: secHits});
     });
-    sh.sort((a,b)=>b[0]-a[0]);
+    let n = 0;
+    sh.forEach(x => n += x.hits.length);
     res.innerHTML = "";
     if(ih.length || sh.length){
       res.style.display = "block";
       if(ih.length){
         res.insertAdjacentHTML("beforeend", `<h3>洞见命中 ${ih.length} 条</h3>`);
-        ih.sort((a,b)=>b[0]-a[0]).slice(0,6).forEach(([c,card])=>{
-          res.insertAdjacentHTML("beforeend", `<p><a href="#${card.id}" onclick="res.style.display='none'">» ${card.querySelector("h2").innerText.replace(/^\d+\. /,"")}</a></p>`);
+        ih.slice(0,6).forEach(x => {
+          res.insertAdjacentHTML("beforeend", `<p><a href="#${x.id}" onclick="gotoHit('${x.id}',${x.off},${x.len});res.style.display='none';return false;">» <b>${esc(x.title)}</b> · ${esc(x.disp)}</a></p>`);
         });
       }
       if(sh.length){
-        res.insertAdjacentHTML("beforeend", `<h3>原文命中 ${sh.length} 章（前10）</h3>`);
-        sh.slice(0,10).forEach(([c,sec])=>{
-          res.insertAdjacentHTML("beforeend", `<p><a href="#${sec.id}" onclick="res.style.display='none'">» ${esc(sec.querySelector("h3").innerText.slice(0,40))}</a></p>`);
+        res.insertAdjacentHTML("beforeend", `<h3>原文命中 ${sh.length} 章 ${n} 句</h3>`);
+        sh.slice(0,8).forEach(x => {
+          x.hits.forEach((h,i) => {
+            res.insertAdjacentHTML("beforeend", `<p><a href="#${x.id}" onclick="gotoHit('${x.id}',${h.off},${h.len});res.style.display='none';return false;">» <b>${esc(x.title)}</b>${x.hits.length > 1 ? "（" + (i+1) + "/" + x.hits.length + "）" : ""} · ${esc(h.disp)}</a></p>`);
+          });
         });
       }
     } else {
       res.style.display = "block";
       res.innerHTML = `<p style="color:var(--dim)">没搜到。换个说法试试（如「失业领钱」「骗」「工伤」），或翻「洞见导航」。</p>`;
     }
-    meta.textContent = `“${q.value}” → 洞见 ${ih.length} / 原文 ${sh.length}`;
-  }
-  run();
-})();
+    meta.textContent = `“${q.value}” → 洞见 ${ih.length} / 原文 ${n} 句`;
+      }
+      q.addEventListener("input", () => { clearTimeout(deb); deb = setTimeout(run, 120); });
+      run();
+    })();
 </script>
 </body>
 </html>
