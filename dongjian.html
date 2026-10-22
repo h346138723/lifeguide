@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>《价值心法》洞见网 · 微念读书</title>
+<style>
+  :root{
+    --navy:#1A2332; --blue:#4A7CF7; --gold:#F5A623; --bg:#FAFAF8;
+    --card:#FFFFFF; --gray:#EDEFF2; --text:#333C47; --sub:#5A6478; --line:#DDE1E8;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:"Microsoft YaHei",-apple-system,sans-serif;background:var(--bg);color:var(--text);font-size:15px;line-height:1.7}
+  header{position:sticky;top:0;z-index:50;background:var(--navy);color:#fff;padding:14px 20px 12px;box-shadow:0 2px 10px rgba(0,0,0,.18)}
+  .head-top{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+  h1{font-size:20px;letter-spacing:.06em}
+  .sub{font-size:12.5px;color:#9FB4CC;max-width:640px;margin-top:2px}
+  .stats{font-size:12px;color:#9FB4CC}
+  .stats b{color:var(--gold)}
+  .controls{margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  .ctrl-btn{padding:6px 14px;border-radius:20px;border:1px solid rgba(255,255,255,.35);background:transparent;color:#DFE9F5;font-size:13px;cursor:pointer;transition:.2s}
+  .ctrl-btn:hover{border-color:var(--gold);color:var(--gold)}
+  .ctrl-btn.active{background:var(--gold);border-color:var(--gold);color:var(--navy);font-weight:600}
+  .search{flex:1;min-width:200px;max-width:340px;padding:6px 14px;border-radius:20px;border:none;font-size:13px;background:rgba(255,255,255,.12);color:#fff;outline:none}
+  .search::placeholder{color:#9FB4CC}
+  main{max-width:1180px;margin:0 auto;padding:18px 20px 80px}
+  .howto{background:#FFF7E8;border:1px solid #F5D9A8;border-radius:12px;padding:12px 16px;font-size:13.5px;color:#6B5430;margin-bottom:8px}
+  .howto b{color:#B07C18}
+  .sec-title{font-size:15px;font-weight:700;color:var(--navy);margin:26px 0 10px;padding-left:10px;border-left:5px solid var(--gold)}
+  .chain{display:flex;gap:6px;overflow-x:auto;padding:10px 2px;background:#fff;border:1px solid var(--line);border-radius:12px}
+  .chain .step{flex:0 0 auto;display:flex;align-items:center;gap:4px;background:var(--gray);border-radius:20px;padding:5px 12px;font-size:12px;cursor:pointer;white-space:nowrap}
+  .chain .step:hover{background:var(--gold);color:var(--navy)}
+  .chain .step .no{font-weight:800;color:var(--navy)}
+  .chain .arrow{color:var(--gold);font-weight:900;flex:0 0 auto}
+  .group{margin-bottom:14px}
+  .group-head{display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--navy);color:#fff;border-radius:10px;font-size:14px;cursor:pointer}
+  .group-head .count{font-size:12px;color:var(--gold);margin-left:auto}
+  .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:10px;margin-top:8px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;cursor:pointer;transition:box-shadow .2s,border-color .2s}
+  .card:hover{box-shadow:0 3px 12px rgba(26,35,50,.12)}
+  .card.hl{box-shadow:0 0 0 3px var(--gold)}
+  .card.flash{animation:flash 1.6s ease}
+  @keyframes flash{0%,60%{box-shadow:0 0 0 4px var(--gold)}100%{box-shadow:0 0 0 3px var(--gold)}}
+  .card.deliv{background:var(--gray)}
+  .card-top{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .no-badge{background:var(--navy);color:#fff;font-weight:800;font-size:12px;padding:2px 8px;border-radius:6px}
+  .card.deliv .no-badge{background:#8A94A6}
+  .name{font-weight:700;color:var(--navy);font-size:14.5px}
+  .deliv-tag{font-size:11px;color:#8A94A6;border:1px solid #B9C0CC;padding:1px 7px;border-radius:10px}
+  .line-tag{font-size:11px;color:var(--navy);background:#FDE8C8;padding:1px 7px;border-radius:10px;display:none}
+  .card.on-line .line-tag{display:inline-block}
+  .rels{display:none;margin-top:10px;border-top:1px dashed var(--line);padding-top:8px;font-size:13.5px}
+  .card.open .rels{display:block}
+  .rel{margin-bottom:9px}
+  .rel .k{display:inline-block;min-width:52px;font-weight:700;font-size:12px;padding:1px 6px;border-radius:5px;margin-right:6px;color:#fff}
+  .k-prev{background:var(--blue)} .k-next{background:var(--gold)} .k-explain{background:#6B8FA3} .k-how{background:#3E8E6E} .k-family{background:#8A6FB0}
+  /* 陌生读者版：关联编号做成大按钮 */
+  .rel a{display:inline-block;background:#EEF3FE;color:var(--blue);text-decoration:none;font-weight:700;padding:0 8px;border-radius:6px;border:1px solid #C6D6F9;margin:0 1px}
+  .rel a:hover{background:var(--blue);color:#fff}
+  .jumpbar{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:var(--navy);color:#fff;padding:9px 18px;border-radius:30px;font-size:13px;box-shadow:0 4px 16px rgba(0,0,0,.3);display:none;z-index:99}
+  .jumpbar b{color:var(--gold)}
+  .legend{display:flex;gap:12px;flex-wrap:wrap;font-size:12px;color:var(--sub);background:#fff;border:1px solid var(--line);border-radius:10px;padding:8px 12px;margin-top:10px}
+  .legend span{display:flex;align-items:center;gap:5px}
+  .sw{display:inline-block;width:14px;height:14px;border-radius:4px}
+  footer{text-align:center;color:#9AA3B0;font-size:12px;padding:20px 0 10px}
+  .brand{color:var(--navy);font-weight:700}
+</style>
+</head>
+<body>
+<header>
+  <div class="head-top">
+    <h1>《价值心法》洞见网</h1>
+    <div class="stats">姜胡说《价值心法》拆出的 <b id="stTotal">0</b> 条洞见，一张网串起来</div>
+  </div>
+  <div class="sub">每条洞见都有：前因（讲它之前要先懂什么）· 后果（讲完它该往哪走）· 解释 · 怎么做 · 同族（和谁是一家的）。看到带编号的蓝字就点，它会把你带到下一条。</div>
+  <div class="controls">
+    <button class="ctrl-btn" data-line="0">钱焦虑线</button>
+    <button class="ctrl-btn" data-line="1">行动线</button>
+    <button class="ctrl-btn" data-line="2">内容/产品线</button>
+    <button class="ctrl-btn" data-line="3">信息防身线</button>
+    <button class="ctrl-btn" data-line="-1">取消高亮</button>
+    <input class="search" id="q" placeholder="搜编号或关键词，如 A08 / 时间 / 复盘">
+  </div>
+</header>
+<main>
+  <div class="howto">
+    <b>怎么逛这张网：</b>① 点开任意一张卡片看它的关系 ② 点关系里的 <b>蓝色编号</b>（如 A52）跳到那条洞见 ③ 在那条上继续看它的前因后果——顺着点，就能把整本书逛完。
+  </div>
+  <div class="sec-title">一页主链：这本书的主线</div>
+  <div class="chain" id="chain"></div>
+
+  <div class="legend">
+    <span><i class="sw" style="background:var(--blue)"></i>前因：讲它之前要先懂这个</span>
+    <span><i class="sw" style="background:var(--gold)"></i>后果：讲完它该接着看这个</span>
+    <span><i class="sw" style="background:#6B8FA3"></i>解释：它到底在说什么</span>
+    <span><i class="sw" style="background:#3E8E6E"></i>怎么做：能落地的动作</span>
+    <span><i class="sw" style="background:#8A6FB0"></i>同族：和谁是一家的</span>
+    <span>灰色卡片=视频里已讲过</span>
+  </div>
+
+  <div id="groups"></div>
+
+  <footer>© <span class="brand">微念读书</span> · 把书拆成你能用的东西 · 2026</footer>
+</main>
+<div class="jumpbar" id="jumpbar"></div>
+
+<script>window.GRID={"items":[{"id":"A14","name":"困境来自做了不该做的事","tag":"骨架","prev":"无——全书根节点，导言起点","next":"→A52（重复=最典型的不该做）→A47（把不该做的找出来删掉）","explain":"它是\"为什么要转变\"的定义层——不是因为你不够努力，是因为你做错了事","how":"动作出口在A47（找20%）和A48（绑桅杆防再做）","family":"E17收官集（讲\"方法能不能用\"）→ A14回答\"你先卡在哪\"，承接关系"},{"id":"A17","name":"别问能自查的知识","tag":"归纳","prev":"A26（主动学习的下限——先自查）","next":"→A30（别问能自查的→要学就学他怎么想）","explain":"S3自学在人际层的动作版——\"高人时间怎么用\"的怎么做","how":"它本身就是动作（提问前自查3分钟）","family":"与你的私域群运营痛点（伸手党）可互引"},{"id":"A15","name":"阅读是开挂作弊","tag":"同章 第2章","prev":"A26（系统要升级→升级方式=阅读）","next":"→A19（开挂怎么开：抓三成）→A20（越级=开挂失败信号）","explain":"它是\"为什么读书\"的定义层（爽感反转，不是苦役）","how":"动作出口在A19/A20（怎么读）","family":"第2集E2（喜欢擅长复利）讲过\"复利=积累\"→A15给积累的输入源"},{"id":"A18","name":"先别读目录","tag":"同章 第3章·初识法","prev":"A19（书里只有三成有用→目录是作者体系不一定是你的）","next":"→A20（自己判断难易→越级就换）","explain":"它是\"初识\"的方法层（反常识第一步）","how":"拿到新书先翻不读目录","family":"与A19/A20同族（快速阅读三件套），可合并成一集\"反常识读书法\""},{"id":"A19","name":"好书有用知识只占三成","tag":"同章 第3章","prev":"A15（开挂=跳读三成）","next":"→A18（所以别信目录）→A20（所以越级换书）","explain":"A15的机制层（为什么能开挂：书本身有冗余）","how":"先扫骨架再精读","family":"A18/A20必合并或连发，单讲任一条都薄"},{"id":"A20","name":"难度超15.87%就换书","tag":"同章 第3章","prev":"A19（识读难度的前提）","next":"→（读不进=换书，解救\"读不进去\"自我攻击）","explain":"A19的动作层（把关标准）","how":"读不进时换书，不换自我评价","family":"A19/A18"},{"id":"A23","name":"阅读摘抄记忆≠掌握","tag":"同章 第4章","prev":"A15（读了要运行）→存量锚（第5/9/17集关联引用）","next":"→（验收标准：能不能讲给别人）→A52（复盘=形成结果）","explain":"A15/A19的机制层（为什么读了没用：只有动作没有结果）","how":"用\"能不能讲给别人\"验收自己的学","family":"与E11（伪学习）同痛不同角度——E11讲假装努力，A23讲验收标准；与A66（做完=闭环）连讲"},{"id":"A22","name":"讲2000元课，请200元保洁","tag":"同章 第4章·重新理解","prev":"S7（你得先知道自己时薪值钱）","next":"→（外包决策=时间管理动作）","explain":"S7定价在\"自我管理\"层的应用——别用时间换钱的具体化","how":"外包前算时薪，低于外包价的事请人做","family":"与E9（AI放大产能）连讲=\"把省下的时间给机器\"，与A42（1×60）互补"},{"id":"A24","name":"把动脑交给别人=只能做没脑子的事","tag":"同章 第5章","prev":"A14（看见自己→开始自己思考）","next":"→A25（你不思考，别人就来装）→A30（要学就学他怎么想）","explain":"S5的定义层（为什么要自己思考）","how":"看到结论先问\"谁替我思考了\"","family":"与E7（别做好学生）接力——E7讲学校框架把你教成不思考"},{"id":"A25","name":"无数人想把观点装进你脑子","tag":"同章 第5章·意向信息","prev":"A24（思考外包的必然结果）","next":"→A28（防御工具）→A107（升级版：装的不只是观点还有贪）","explain":"A24的机制层（为什么外包危险：有人等着装）","how":"点开任何内容先问\"他想让我信什么\"","family":"与E11（致富教程）同族——E11讲钱，A25讲认知；与E14（成功故事缺一半信息）同源——E14讲裁剪，A25讲动机"},{"id":"A28","name":"真相过滤器：3人同观点找第4个","tag":"同章 第6章","prev":"A24/A25（面对装填的防御工具）","next":"→（信息防身动作）→接E14（故事残缺=共识也残缺）","explain":"S5的防守动作层（怎么不被共识带）","how":"听到一边倒，主动找反方","family":"与E14接力（E14=成功故事的裁剪，A28=共识的裁剪），可做连发"},{"id":"A29","name":"别问电池多少钱，问用什么造的","tag":"同章 第6章·第一性原理","prev":"A25（别人给的价格不可信→自己拆）","next":"→A40（价值>成本=拆价工具的应用）","explain":"S5的思考工具层（拆到要素）","how":"消费/决策前拆一层成本结构","family":"与A40连讲（拆成本→算交易），应用于消费/副业选题"},{"id":"A30","name":"张五常学的是老师怎么想","tag":"同章 第6章","prev":"A24（学思考的前提）","next":"→A51（学来的思考练成下意识）","explain":"A24的怎么做（跟谁学、学什么）","how":"听分析听推理链，不听结论","family":"与A17连（别问能自查的→问就问他怎么想）"},{"id":"A26","name":"你的操作系统，毕业就该升级","tag":"同章 第1章","prev":"A14（做了不该做的事=系统该升级了）","next":"→A15（升级方式=阅读）","explain":"S3的定义层（为什么自学）","how":"每年给系统打一个补丁","family":"与E7（别做好学生）接力——E7讲学校系统错配，A26讲毕业后系统停更"},{"id":"A47","name":"找出造成80%痛苦的那20%","tag":"同章 第9章·痛苦清单","prev":"A14（做了不该做的→找出是哪20%）","next":"→（删掉→启动停止清单）","explain":"A14的动作层（怎么看见+怎么删）","how":"列痛苦清单，找80%来源直接停","family":"与你的三漏口日报同机制；与A64（越没做过越爱规划）连讲=计划vs清单"},{"id":"A48","name":"奥德修斯绑桅杆","tag":"同章 第9章","prev":"S10（行动会翻车→预先锁死）","next":"→（防翻车动作）→A88（环境设计的同机制）","explain":"S10的防失控工具层","how":"给明天的自己上锁（物理隔离/预扣款）","family":"A88（环境设计）同机制可合并；棉花糖实验（口播抽卡素材）同族"},{"id":"A50","name":"目标脱离基线=做梦","tag":"同章 第9章","prev":"A47（先看清现状）","next":"→A64（越没做过越爱规划=脱离基线的机制）→A103（模糊的正确=先有方向）","explain":"S10的目标定义层（目标=基线+台阶）","how":"定目标先写基线","family":"与E12（先有方向再谈方法）接力；与A64做对照（A50给标准，A64揭病根）"},{"id":"A51","name":"卓越=下意识习惯","tag":"同章 第9章","prev":"A50（基线→练）→A30（学怎么想→练成）","next":"→（卓越=习惯的产物）","explain":"S10的机制层（为什么\"知道做不到\"）","how":"关键动作练到不用想","family":"与E11（伪学习）对照——E11讲假装努力，A51讲真练"},{"id":"A52","name":"十年的重复，不如十次复盘","tag":"同章 第9章","prev":"A14（重复=最典型的不该做）→E10存量锚（第10集\"盘\"环节引过蛋炒饭例）","next":"→（复盘=行动三件套）→A102（复盘完=新起点）","explain":"A14的机制层（为什么干了十年没长进）","how":"每次做完加一步复盘，对照目标判对错","family":"🎯与你测绘14年强同构（活证据位）；与E10（写盘拍飞轮）接力——E10讲三件事，A52讲\"盘\"的机制"},{"id":"A32","name":"没开始担心黑粉，开始了担心没人看","tag":"同章 第7章","prev":"E7存量锚（第7集引用过这句）","next":"→（行动前的恐惧解构）","explain":"S10的恐惧拆解层（你怕错了对象）","how":"把\"怕黑粉\"改成\"怕没人看\"，用行动替换恐惧","family":"与E11（行动性无能）、A66（做完一件事）可组\"行动三部曲\"之一"},{"id":"A09","name":"时间是唯一货币","tag":"同章 导言","prev":"S1（看见→开始算账，先算时间账）","next":"→A39（钱是信用）→A42（所以时间要按质量花）","explain":"S7的定义层（推翻\"时间就是金钱\"：时间>金钱）","how":"记账从记钱改成记时间","family":"E2（时间卖一次归零一次）已讲后果向，A09补定义向——E2讲\"别卖时间\"，A09讲\"时间是什么\""},{"id":"A39","name":"钱是信用的度量","tag":"同章 第8章","prev":"A09（时间>金钱→钱到底是什么）","next":"→A40（交易=价值>成本）","explain":"S7的定义层（钱不是数字，是别人给你的信用账）","how":"问自己\"我赚的每块钱对应谁的什么信用\"","family":"与E5（桶=方法）连——桶里盛的是信用不是钱；与E17（收官\"能不能用\"）呼应"},{"id":"A40","name":"价值>成本才有交易","tag":"同章 第8章","prev":"A39→A29（拆成本结构）","next":"→A55（商机=你买过的）→A78（验证=愿付钱）","explain":"S7的机制层（市场成交条件）","how":"上架前算\"我成本多少，他还愿付多少\"","family":"与E4（收益公式：价格成本用户数复购）接力——E4讲公司视角，A40讲单次交易视角"},{"id":"A41","name":"头脑越简单越需外在装点","tag":"同章 第9章","prev":"A39（真有钱=信用，不需要装）","next":"→（消费观纠正）","explain":"A39的反面证据层（装点=用钱买安全感）","how":"掏钱撑场面先问\"我是不是在装\"","family":"与E8（豪车悖论）同痛不同层——E8讲\"买给别人看\"的行为，A41讲\"内心空洞\"的根源，开篇需显性区分"},{"id":"A42","name":"高质量1小时=1×60","tag":"同章 第9章","prev":"A09（时间按质量计）","next":"→（效率管理动作）","explain":"A09的机制层（时间怎么花才算对）","how":"用\"高质量小时数\"衡量自己，替代\"工作时长\"","family":"与E9（AI放大产能）连讲——A42说留出高质量时间，E9说用AI把那时间放大"},{"id":"A103","name":"模糊的正确","tag":"归纳","prev":"A50（目标=基线+方向）→E11存量锚（行动性无能）","next":"→S10（先动起来，别等精确）","explain":"S10/决策精度的定义层（方向大于精度）","how":"先定方向，别等想精确","family":"与E12（先有方向）区分——E12讲方向怎么找，A103讲方向多准够用"},{"id":"A45","name":"平等但有维度之分","tag":"同章 第9章","prev":"A39（承认差距=承认信用差）","next":"→（差距可补→学习动机）","explain":"S7的心态层（平等≠没差距，差距≠不可补）","how":"把\"凭什么\"改成\"差在哪一维\"","family":"与A105（贫穷可练）连——都讲差距可逆，一个讲认知一个讲模式"},{"id":"A60","name":"秦皇陵工匠殉葬","tag":"同章 第十二章同段","prev":"A09（别把所有时间押在一个系统里）","next":"→A61（同段）→S11（所以要有第二技能）","explain":"S8的警告层（单一系统的风险）","how":"押注前看\"这系统倒了会不会埋了我\"","family":"⚠️A60/A61同段，二选一或合并，别当两期"},{"id":"A61","name":"做人名额却像小白鼠","tag":"同章 第十二章同段","prev":"同A60","next":"→S11（第二技能=逃生门）","explain":"A60的现代版（组织代价转嫁）","how":"评估工作问\"失败了谁买单\"","family":"⚠️与A60合并讲最佳"},{"id":"A55","name":"花钱买过的服务=你的商机","tag":"同章 第10章","prev":"A40（交易成立的证明=你掏过钱）→E5存量锚（第5集结尾翻支付记录）","next":"→（需求清单=副业线索）→A95（问题就是需求）","explain":"S8的启动层（怎么找方向：从你的支付记录）","how":"翻支付记录找\"我买过但也能自己做\"的","family":"与E5（桶）接力——E5讲桶（方法），A55讲往桶里舀什么（需求线索）"},{"id":"A62","name":"帕金森法则","tag":"同章 第12章","prev":"A50（基线→给自己标准）","next":"→（死线=动作）→与你的\"人造死线\"日报互引","explain":"S10的机制层（为什么拖：时间给得太宽裕）","how":"给任务造比需求短的死线","family":"与A48（绑桅杆）连讲——一个管时间（帕金森），一个管诱惑（绑桅杆）"},{"id":"A63","name":"和多数人站一起=成为大多数人","tag":"同章 第12章","prev":"A50（目标脱离基线→随大流最安全）→A62同段","next":"→（独立决策动作）→A69（找自己的局部优势）","explain":"A62同段的另一面（随大流=普通的机制）","how":"做决定时问\"多数人怎么做\"——然后问自己要不要一样","family":"与E7（别做好学生）连——E7破标准答案，A63破从众；与A28（真相过滤器）对照——A28防信息共识，A63防行为从众"},{"id":"A64","name":"越没做过越爱规划","tag":"同章 第12章","prev":"A50（脱离基线→用规划代替行动）","next":"→A66（解药：做完一件事）","explain":"A50的机制层（目标怎么脱离基线的）","how":"规划量超过行动量时掐自己","family":"与E11（收藏100篇不执行）、A66组\"行动三件套\""},{"id":"A66","name":"摆脱废物标签=做完一件事","tag":"同章 第12章","prev":"A64（规划的毒）→A32（恐惧的毒）","next":"→A93（做完了→发出去测）→A102（做完=新起点）","explain":"S10的解药层（闭环>完美）","how":"把一个开了头的事关掉（做完/砍掉都算）","family":"与E12（副业4步）、E15（先交付）成行动三部曲；E17存量锚（\"废材\"一句话带过）"},{"id":"A102","name":"终点并非起点","tag":"同章 第12章","prev":"A66（完成闭环后）","next":"→（发布≠结束→A93测试/迭代）","explain":"A66的延伸层（做完之后算什么）","how":"每个交付物后面接一个\"下一步动作\"","family":"与A93（每条视频都在测试）连讲——A102说完结，A93说测试"},{"id":"A68","name":"30万粉天花板","tag":"同章 第13章","prev":"A60/A61（单一系统有险）→E6存量锚（第6集带过）","next":"→A69（别硬顶，找局部）","explain":"S11的定义层（为什么需要第二技能：天花板）","how":"主技能外再养一个可叠加技能","family":"与E6（单一技能被复制=贬值）接力——E6讲贬值，A68讲天花板；换角度可做"},{"id":"A69","name":"胜利=局部优势以大打小","tag":"同章 第13章","prev":"A68（正面打不过）","next":"→A70（差异化=多一条狗）","explain":"S11的策略层（怎么赢：选战场）","how":"选自己占优的局部打","family":"与E6（玩枪=换战场）同族可回指；🎯方向型，和第2集（喜欢擅长）连"},{"id":"A70","name":"二郎神多一条狗","tag":"同章 第13章","prev":"A69（局部优势→具体化）","next":"→（差异化盘点动作）","explain":"A69的动作层（优势长什么样）","how":"盘点\"多出来的那条狗\"（独特组合）","family":"与E6（前25%×前25%）同族可回指；轻快型"},{"id":"A72","name":"记者式提问","tag":"同章 第13章","prev":"A24（会思考→会提问）→E12存量锚（第12集带过）","next":"→（信息差优势）","explain":"S11的信息获取工具层（差异化也有信息维度）","how":"见高手前先写5个问题","family":"与A30（学他怎么想）连——一个问题问思考，一个问题问事实"},{"id":"A67","name":"一半总统没当过议员","tag":"同章 第13章","prev":"A68（路径不唯一）","next":"→（换路的勇气）","explain":"A68的心态层（天花板≠死路）","how":"把\"我没经验\"改成\"我换条路\"","family":"与E12（副业4步）连——E12教路径，A67给换路径的合法性"},{"id":"A76","name":"小众审美总能找到同频人","tag":"同章 第14章","prev":"A70（差异化→找到你的人）→口播抽卡\"长尾效应\"同族","next":"→A58（标签组合→让别人认识你）","explain":"S11/S12的接口（差异→蓄水）","how":"不删小众选题，先找同频人","family":"与A77（伪需求）对撞——A76说小众能做，A77说伪需求不能做，差在验证"},{"id":"A77","name":"小旅馆换课桌=伪需求","tag":"同章 第14章","prev":"A78/A80（验证方法）→E1存量锚（第1集案例）","next":"→（伪需求鉴别）","explain":"S12的鉴伪层（看行为别听嘴说）","how":"调研需求看行为数据","family":"与A76对撞（小众vs伪需求）；与A80连（朋友点头≠市场）"},{"id":"A78","name":"别问想不想买，问买不买","tag":"同章 第14章","prev":"A40（交易=付费意愿）→A94（你猜的是假的）","next":"→A77（伪需求鉴别器）→A80（找陌生人验证）","explain":"S12的验证方法层（问意愿不如测行为）","how":"验证需求用\"会不会付钱\"代替\"好不好\"","family":"与A80连讲最佳（别找熟人问意见）"},{"id":"A80","name":"朋友不是客户","tag":"同章 第14章","prev":"A78","next":"→（陌生人付费=真信号）→A81（网络≠人头）","explain":"A78的边界层（谁的意见不算数：朋友）","how":"验证需求找陌生人付费，不找熟人问意见","family":"与E15（一万看客不如一百信你的人）接力——E15讲信任，A80讲验证信号；与飞书私域（用户从抖音来=陌生人验证）互引"},{"id":"A93","name":"每条视频都在测试书","tag":"同章 第16章","prev":"A66/A102（做完了→发出去测）","next":"→A98（内容=试用版）→（迭代闭环）","explain":"S12/S10接口（行动→测试）","how":"每期内容当一次低价市场测试","family":"与E12（副业4步第0步评论区挖需求）连；🎯你正在做的事=活证据位"},{"id":"A94","name":"你以为的用户角度是假的","tag":"同章 第16章","prev":"E15存量锚（先发再判断）","next":"→A95（问题就是需求）→A85（用户关心四类）","explain":"S12的定义层（自嗨式用户思维）","how":"自检\"这需求是我猜的还是有数据\"","family":"标题句式与E14同款可套公式；与A77（伪需求）同病不同面"},{"id":"A95","name":"问题就是需求","tag":"同章 第16章","prev":"A94（别猜→去听）→A55（商机线索）","next":"→（从抱怨找产品）","explain":"S12的发现层（需求从哪来）","how":"从自己/别人的抱怨里找产品","family":"与E12（评论区挖金矿）连；与E5（支付记录）形成\"找需求双通道\""},{"id":"A99","name":"书是半成品","tag":"同章 第16章","prev":"A93（发出去≠完成）","next":"→（接受不完美→A66闭环的另一面）","explain":"A93的心态层（半成品是常态）","how":"把\"发出去\"当\"完成\"，不当\"结束\"","family":"与A66（做完一件事）对照——A66管行为，A99管心态"},{"id":"A97","name":"没价值就删掉","tag":"同章 第16章","prev":"A47（痛苦清单的资产版）→E1/E14存量锚","next":"→（资产清理动作）","explain":"S12的减法层（蓄水也要清淤）","how":"定期删对\"以后的我\"没价值的","family":"与你的知识库癖好对味；整理型内容"},{"id":"A98","name":"内容=试用版","tag":"同章 第16章","prev":"A93（测试）→A95（需求）","next":"→（先内容后产品）","explain":"S12的产品层（内容先行）","how":"先发内容测需求，再决定做产品","family":"与E5（服务=商机）、A55（支付记录）闭环；与E15（先交付）连"},{"id":"A58","name":"关注的是标签组合","tag":"归纳","prev":"A76（小众定位→标签化）","next":"→（对外宣告=蓄水动作）","explain":"S12的形象层（别人怎么记住你）","how":"盘点标签组合，对外主动宣告","family":"与E13（站着挣钱=定价权）可回指——标签组合是你的定价资本"},{"id":"A08","name":"让人行动的是感受不是逻辑","tag":"同章 第15章","prev":"S12（有用户了→怎么让他动）","next":"→A82/A84（说对方的语言/换说法）→A83（单向输出=垃圾）","explain":"S13的定义层（为什么讲道理没用）","how":"说服先给画面/体验，再给逻辑","family":"🎯与E17（方法能不能用=让人行动）同题不同层——E17总结型，A08方法型；与影响力拆书库同源"},{"id":"A81","name":"1×5000不是网","tag":"同章 第15章","prev":"A80（朋友≠客户→人头≠网络）→E1存量锚（第1集带过）","next":"→（织网动作）","explain":"A80的升级层（数量→结构）","how":"经营关系看结构与深度，不看人头","family":"与E15（一百个信你的人）连——E15说目标，A81说结构"},{"id":"A82","name":"别在泰国说西班牙语","tag":"同章 第15章","prev":"A08（感受>逻辑→频道先行）","next":"→（沟通前的调频动作）","explain":"A08的怎么做（说对方的话）","how":"开口前确认对方的\"语言\"（利益/情绪/处境）","family":"⚠️与A84（补牙小奶油）同章机制，二选一或合并别当两期"},{"id":"A83","name":"传单会被丢进垃圾桶","tag":"同章 第15章","prev":"A08（单向说=没人听）","next":"→A85/A86（输出前问四件事）","explain":"S13的提醒层（群发=垃圾）","how":"发内容前问\"凭什么它不被丢\"","family":"与A85/A86连成\"内容生产检查链\""},{"id":"A84","name":"补牙说抹小奶油","tag":"同章 第15章","prev":"A08","next":"→（表达换频道的动作示范）","explain":"A82的案例层（同一件事不同说法）","how":"重要的话换种说法再说一遍","family":"⚠️与A82合并；与口播开头\"避免教学腔\"同源"},{"id":"A85","name":"用户只关心四类事","tag":"同章 第15章","prev":"A94（用户角度→具体化）","next":"→A86（输出前问四件事）","explain":"S12/S13接口（内容写给谁=用户视角）","how":"任何内容先问\"关他什么事\"","family":"与A94连（你猜的假的→他关心的四类）；四类划分引用前回源核对"},{"id":"A86","name":"输出前问四件事","tag":"同章 第15章","prev":"A85","next":"→（发布动作）","explain":"A85的动作层","how":"发布前过四问","family":"与A83连（凭什么不被丢=四问之一）；清单型押收藏"},{"id":"A87","name":"绕过防御系统","tag":"同章 第15章","prev":"A83（硬推销全被过滤）","next":"→E13（不卖而卖=绕过防御的阳谋版）","explain":"S13的机制层（人脑有广告过滤器）","how":"把\"卖\"改成\"引\"","family":"与E13（站着挣钱）强连——E13讲姿态，A87讲机制；与E3（利他不是人品）接力"},{"id":"A89","name":"想让人不信也得信","tag":"同章 第15章","prev":"A87（绕过防御的根基=信）→E15存量锚（信任=预付）","next":"→A90（互惠动作）→（卖的前提）","explain":"S13的信任层（诚实是武器）","how":"把缺点/限制主动说在前面","family":"与E13（站着挣钱）、E15（提前积累用户）成信任三部曲；🎯"},{"id":"A90","name":"父母随礼小本=互惠","tag":"同章 第15章","prev":"A89（信→互惠）","next":"→（人情账本动作）","explain":"A89的动作层（怎么积累信：记人情账）","how":"像记账一样记人情","family":"注意与《影响力》书库同族别撞E3利他；与E15（信任是预付的）连"},{"id":"A88","name":"赌场红色/商场音乐","tag":"同章 第15章","prev":"A08（感受层的力量）","next":"→（环境设计=行为的被动引导）","explain":"A08的机制延伸（感受不止说服，还设计）","how":"反用：给自己设计环境","family":"与A48（绑桅杆）同机制可合并一集；与口播\"奶头乐/摩擦\"素材同族"},{"id":"A92","name":"便宜10块的闹钟vs电视","tag":"同章 第15章","prev":"A40（价格观）→A29（拆参照物）","next":"→（识破销售话术）","explain":"S13的锚定层（贵不贵看你拿什么比）","how":"下单前问\"我跟什么比觉得便宜\"","family":"与口播抽卡\"锚定效应\"卡同题，注意双平台区分；与A29（第一性原理）连讲最佳"},{"id":"A79","name":"小范围失败演讲","tag":"同章 第15章","prev":"A66（先完成）→E12存量锚（疑似带过，待回源）","next":"→（测试=发布前的小范围预演）","explain":"S13/S12接口（发布前的验证）","how":"重要产出先小范围给批评","family":"与A93（每条视频测试）连——一个管发布前，一个管发布后"},{"id":"A107","name":"骗术与贪婪","tag":"同章 第22章","prev":"A25（别人装你脑子→升级为骗局）→E11存量锚（第11集致富教程）","next":"→A109（屁股决定脑袋=被骗的立场成因）","explain":"S14的防守层（骗局=贪婪+信息差）","how":"遇\"稳赚\"先查自己哪颗贪心被点了","family":"🎯进阶E11——E11讲卖课的人，A107讲被收割的心理机制"},{"id":"A109","name":"屁股决定脑袋","tag":"同章 第22章","prev":"A107（贪→立场）","next":"→A110（抽离立场再决策）","explain":"A107的机制层（观点是立场函数）","how":"听观点先看说话的人坐在哪","family":"与A28（真相过滤器）连——一个查共识，一个查立场"},{"id":"A110","name":"假如我一无所有还会选吗","tag":"同章 第22章","prev":"A109（抽离立场→抽离沉没成本）","next":"→A111（决策冷静期）","explain":"S14的决策工具层","how":"重大决策前问\"如果清零，我还选它吗\"","family":"与E12（先有方向）可回指；口播号也能用"},{"id":"A111","name":"气头上不做未来决策","tag":"同章 第22章","prev":"A110→E9存量锚（第9集带过）","next":"→（情绪冷却动作）","explain":"A110的情绪前提层（冷静才能清零）","how":"给情绪设冷却期（24小时）","family":"与A110连讲（先冷静再清零）；与A29（拆成本）都属决策用"},{"id":"A112","name":"看对≠活到","tag":"同章 第22章","prev":"A111（情绪关）→A110（选择关）","next":"→（拿住=练）","explain":"S14的收尾层（知道→做到之间隔人性）","how":"把\"看对\"降权，\"拿住\"提上来练","family":"与E5（会赚钱vs守得住钱）同痛；⚠️只讲心理不教标的"},{"id":"A105","name":"贫穷是长期练出来的","tag":"同章 第22/23章","prev":"A09（时间花在哪=练出什么）→E5存量锚（第5集引原话）","next":"→（可逆→希望）→A101已交付锚（投资自己=脑子涨）","explain":"S14的定义层（贫穷=行为模式，可练可逆）","how":"把\"我穷\"改成\"我在练什么\"","family":"🎯第5集只引了句机制没讲；与A45（平等维度）连——差距可补的两种说法"},{"id":"A106","name":"鸭子与池塘","tag":"同章 第22章，巴菲特比喻","prev":"A39（分清信用/运气）→E6存量锚（第6集引用）","next":"→（环境红利识别）","explain":"S14的归因层（水位≠技术）","how":"赚到钱先问\"这是水位还是我\"","family":"与E5（利弗莫尔）同族；⚠️引用巴菲特须标注"}],"node_map":{"14":"S1 看见（1条）","17":"S4 阅读（7条）","15":"S4 阅读（7条）","18":"S4 阅读（7条）","19":"S4 阅读（7条）","20":"S4 阅读（7条）","23":"S4 阅读（7条）","22":"S4 阅读（7条）","24":"S5 思考（6条）","25":"S5 思考（6条）","26":"S5 思考（6条）","28":"S5 思考（6条）","29":"S5 思考（6条）","30":"S5 思考（6条）","47":"S6 写（5条）","48":"S6 写（5条）","50":"S6 写（5条）","51":"S6 写（5条）","32":"S6 写（5条）","09":"S7 定价（6条）","39":"S7 定价（6条）","40":"S7 定价（6条）","41":"S7 定价（6条）","42":"S7 定价（6条）","103":"S7 定价（6条）","60":"S8 启动（3条）","61":"S8 启动（3条）","55":"S8 启动（3条）","62":"S10 行动（6条）","64":"S10 行动（6条）","66":"S10 行动（6条）","102":"S10 行动（6条）","63":"S10 行动（6条）","52":"S10 行动（6条）","68":"S11 差异（6条）","69":"S11 差异（6条）","76":"S11 差异（6条）","72":"S11 差异（6条）","70":"S11 差异（6条）","67":"S11 差异（6条）","77":"S12 蓄水（9条）","78":"S12 蓄水（9条）","93":"S12 蓄水（9条）","94":"S12 蓄水（9条）","95":"S12 蓄水（9条）","99":"S12 蓄水（9条）","58":"S12 蓄水（9条）","98":"S12 蓄水（9条）","97":"S12 蓄水（9条）","08":"S13 销售（13条）","80":"S13 销售（13条）","81":"S13 销售（13条）","82":"S13 销售（13条）","83":"S13 销售（13条）","84":"S13 销售（13条）","85":"S13 销售（13条）","86":"S13 销售（13条）","87":"S13 销售（13条）","89":"S13 销售（13条）","90":"S13 销售（13条）","92":"S13 销售（13条）","88":"S13 销售（13条）","107":"S14 投资自己（7条）","109":"S14 投资自己（7条）","110":"S14 投资自己（7条）","111":"S14 投资自己（7条）","112":"S14 投资自己（7条）","106":"S14 投资自己（7条）","105":"S14 投资自己（7条）","45":"S7 定价","79":"S13 销售"},"delivered":["A59","A71","A108","A27","A96","A101","A38","A100"],"anchor_roles":{"A59":"已用第11集 · 线路1起点；A107的存量锚 |","A71":"已用第12集 · 线路3起点；E12锚点 |","A108":"已用第6集 · S11上游（E6锚），A68接力 |","A27":"已用第14集 · 线路4起点；A25/A28接力 |","A96":"已用第4/15集 · S12锚（E15信任），A80/A81接力 |","A101":"已用第2/16集 · S14锚（投资自己），A105接力 |","A38":"已用第12集 · S10/S12接口锚，A95/A55接力 |","A100":"已用第4集 · S7锚（E4），A40/A55接力 |"},"chain":[["A14","你卡住不是没做事，是做了不该做的事（S1看见）"],["A52","十年的重复，不如十次复盘（S6写）"],["A26","你的操作系统，毕业就该升级（S3自学）"],["A15","阅读是开挂作弊（S4阅读）"],["A19/A20","抓三成，越级就换书（S4阅读）"],["A24/A25","动脑外包=人生外包；有人想装你脑子（S5思考）"],["A28","真相过滤器：三个同观点，找第四个（S5思考）"],["A47/A66","80%痛苦找20%删掉；做完一件事才算数（S6写/S10行动）"],["A09","时间是唯一货币（S7定价）"],["A39/A40","钱是信用；交易=他觉值>价格>你成本（S7定价）"],["A60/A61","别把命押在会埋人的系统（S8启动）"],["A68/A69/A70","天花板→局部优势→多一条狗（S11差异）"],["A62/A64","帕金森=截短死线；越没做过越爱规划（S10行动）"],["A77/A78/A95","伪需求鉴别；问买不买；问题就是需求（S12蓄水）"],["A08/A83/A86","感受推动；传单进垃圾桶；输出前四问（S13销售）"],["A89","让他信你，比让他买你更值钱（S13销售）"],["A105/A110","贫穷可练回去；一无所有还选吗（S14投资自己）"],["A107/A112","骗子盯的是你的贪；看对≠活到（S14投资自己）"]],"lines":{"线路1 · 钱焦虑线（挂\"要\"最重）":["E11","A107","A109","A92","A40","A39"],"线路2 · 行动线（\"我知道但做不到\"）":["E11","A32","A64","A50","A66","A102","A93"],"线路3 · 内容/产品线（做号人专属）":["E12","A55","A95","A77","A80","A94","A85","A86","A98","A89"],"线路4 · 信息防身线（跟E14接力）":["E14","A25","A28","A109","A107","A110"]}};</script>
+<script>
+const G=window.GRID;
+const LINE_COLORS=["#F5A623","#4A7CF7","#3E8E6E","#8A6FB0"];
+const LINE_TAGS=["钱焦虑线","行动线","内容/产品线","信息防身线"];
+const byId={};
+G.items.forEach(it=>byId[it.id]=it);
+
+document.getElementById("stTotal").textContent=G.items.length+G.delivered.length;
+
+// 主链
+(function(){
+  const box=document.getElementById("chain");
+  G.chain.forEach((step,i)=>{
+    const el=document.createElement("div");
+    el.className="step";
+    el.innerHTML='<span class="no">'+step[0]+'</span>'+step[1];
+    el.title="跳到 "+step[0];
+    el.onclick=()=>jumpTo(step[0]);
+    box.appendChild(el);
+    if(i<G.chain.length-1){
+      const ar=document.createElement("div");ar.className="arrow";ar.textContent="→";box.appendChild(ar);
+    }
+  });
+})();
+
+// 分组：节点名清洗成大白话（去S编号/计数）
+function cleanNode(n){
+  return (n||"")
+    .replace(/（含补遗）/g,"")
+    .replace(/S\d+\/?S?\d*\s*/g,"")
+    .replace(/（.*?）|\(.*?\)/g,"")
+    .trim();
+}
+(function(){
+  const root=document.getElementById("groups");
+  // 已交付组（最后放，灰色）
+  const groups={};
+  G.items.forEach(it=>{
+    const node=cleanNode(G.node_map[it.id.replace("A","")])||"其他";
+    (groups[node]=groups[node]||[]).push(it);
+  });
+  const keys=["看见","阅读","思考","写","定价","启动","行动","差异","蓄水","销售","投资自己"]
+    .filter(k=>groups[k]).concat(Object.keys(groups).filter(k=>!["看见","阅读","思考","写","定价","启动","行动","差异","蓄水","销售","投资自己"].includes(k)));
+  keys.forEach(k=>{
+    const g=document.createElement("div");g.className="group";
+    const h=document.createElement("div");h.className="group-head";
+    h.innerHTML=k+'<span class="count">'+groups[k].length+'条</span>';
+    h.onclick=()=>toggleGroup(h);
+    g.appendChild(h);
+    const c=document.createElement("div");c.className="cards";
+    groups[k].forEach(it=>c.appendChild(makeCard(it)));
+    g.appendChild(c);root.appendChild(g);
+  });
+  // 已交付锚点组
+  const dg=document.createElement("div");dg.className="group";
+  const dh=document.createElement("div");dh.className="group-head";
+  dh.innerHTML='已在视频里讲过的 <span class="count">'+G.delivered.length+'条</span>';
+  dh.onclick=()=>toggleGroup(dh);
+  dg.appendChild(dh);
+  const dc=document.createElement("div");dc.className="cards";
+  G.delivered.forEach(id=>{
+    const role=G.anchor_roles[id]||"已交付";
+    dc.appendChild(makeCard({id:id,name:role.split("·")[0]||role,tag:"",prev:"",next:"",explain:"",how:"",family:role,delivered:true}));
+  });
+  dg.appendChild(dc);root.appendChild(dg);
+})();
+
+function toggleGroup(head){
+  const cards=head.nextElementSibling;
+  cards.style.display=cards.style.display==="none"?"grid":"none";
+}
+
+function esc(s){return (s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+
+function linkify(txt){
+  return esc(txt).replace(/\b([AE]\d{1,3}(?:\/[AE]\d{1,3})*)\b/g,function(m){
+    const first=m.split("/")[0];
+    if(!byId[first] && !G.delivered.includes(first)) return m;
+    return '<a href="#'+first+'" data-jump="'+first+'">'+m+'</a>';
+  });
+}
+
+function makeCard(it){
+  const el=document.createElement("article");
+  el.className="card"+(it.delivered?" deliv":"");
+  el.id=it.id;
+  const isDeliv=!!it.delivered;
+  el.innerHTML=
+    '<div class="card-top">'+
+      '<span class="no-badge">'+it.id+'</span>'+
+      '<span class="name">'+esc(it.name)+'</span>'+
+      (isDeliv?'<span class="deliv-tag">视频讲过</span>':'')+
+      '<span class="line-tag"></span>'+
+    '</div>'+
+    '<div class="rels">'+
+      (it.prev?'<div class="rel"><span class="k k-prev">前因</span>'+linkify(it.prev)+'</div>':'')+
+      (it.next?'<div class="rel"><span class="k k-next">后果</span>'+linkify(it.next)+'</div>':'')+
+      (it.explain?'<div class="rel"><span class="k k-explain">解释</span>'+linkify(it.explain)+'</div>':'')+
+      (it.how?'<div class="rel"><span class="k k-how">怎么做</span>'+linkify(it.how)+'</div>':'')+
+      (it.family?'<div class="rel"><span class="k k-family">同族</span>'+linkify(it.family)+'</div>':'')+
+    '</div>';
+  el.onclick=function(e){
+    if(e.target.closest("a"))return;
+    el.classList.toggle("open");
+  };
+  return el;
+}
+
+// 跳转 + 底部提示条（陌生读者版：提示你从哪来）
+function jumpTo(id){
+  const el=document.getElementById(id);
+  if(!el)return;
+  el.scrollIntoView({behavior:"smooth",block:"center"});
+  el.classList.remove("flash");void el.offsetWidth;el.classList.add("flash");
+  if(!el.classList.contains("open"))el.classList.add("open");
+  const bar=document.getElementById("jumpbar");
+  bar.innerHTML='正在看 <b>'+id+'</b> — 点卡片里的蓝色编号继续逛';
+  bar.style.display="block";
+  clearTimeout(jumpTo._t);
+  jumpTo._t=setTimeout(()=>{bar.style.display="none";},2600);
+}
+document.addEventListener("click",function(e){
+  const a=e.target.closest("a[data-jump]");
+  if(a){e.preventDefault();jumpTo(a.getAttribute("data-jump"));}
+});
+
+// 线路高亮
+let curLine=-1;
+const lineButtons=document.querySelectorAll(".ctrl-btn[data-line]");
+lineButtons.forEach(btn=>{
+  btn.addEventListener("click",function(){
+    const idx=parseInt(btn.getAttribute("data-line"));
+    if(curLine===idx){clearLine();return;}
+    clearLine();
+    if(idx<0)return;
+    curLine=idx;
+    btn.classList.add("active");
+    const ids=G.lines[Object.keys(G.lines)[idx]]||[];
+    ids.forEach(id=>{
+      const el=document.getElementById(id);
+      if(!el)return;
+      el.classList.add("hl","on-line");
+      const lt=el.querySelector(".line-tag");
+      if(lt)lt.textContent=LINE_TAGS[idx];
+    });
+  });
+});
+function clearLine(){
+  lineButtons.forEach(b=>b.classList.remove("active"));
+  document.querySelectorAll(".card.hl,.card.on-line").forEach(c=>{
+    c.classList.remove("hl","on-line");
+  });
+  curLine=-1;
+}
+
+// 搜索
+const q=document.getElementById("q");
+q.addEventListener("input",function(){
+  const kw=q.value.trim().toLowerCase();
+  document.querySelectorAll(".card").forEach(c=>{
+    c.style.display=(!kw||(c.textContent||"").toLowerCase().includes(kw))?"":"none";
+  });
+  document.querySelectorAll(".group").forEach(g=>{
+    let any=false;
+    g.querySelectorAll(".card").forEach(c=>{if(c.style.display!=="none")any=true;});
+    g.style.display=any?"":"none";
+  });
+});
+</script>
+</body>
+</html>
